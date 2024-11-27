@@ -3,45 +3,44 @@ import 'package:flutter/services.dart';
 import 'package:term_project/cons/colors.dart';
 
 class CustomTextField extends StatelessWidget {
-  final String label;
-  final bool isTime;   // 시간 선택하는 텍스트 필드인지 여부
+  final String label; // Label for the text field
+  final bool isTime; // Indicates if this is a time-specific text field
 
   const CustomTextField({
     required this.label,
     required this.isTime,
-
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(  // ➋ 세로로 텍스트와 텍스트 필드를 위치
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Column( // Arranges label and text field vertically
+      crossAxisAlignment: CrossAxisAlignment.start, // Aligns content to the start
       children: [
         Text(
-          label,
+          label, // Display label text
           style: TextStyle(
-            color: PRIMARY_COLOR,
-            fontWeight: FontWeight.w600,
+            color: PRIMARY_COLOR, // Primary color for label text
+            fontWeight: FontWeight.w600, // Semi-bold font
           ),
         ),
         Expanded(
-          flex: isTime ? 0 : 1, // ➏
+          flex: isTime ? 0 : 1, // Adjusts the size based on whether it's a time field
           child: TextFormField(
-            cursorColor: Colors.grey,    // 커서 색상 변경
-            maxLines: isTime ? 1 : null, // ➊ 시간 관련 텍스트 필드가 아니면 한 줄이상 작성 가능
-            expands: !isTime, // ➋ 시간 관련 텍스트 필드는 공간 최대 차지
-            keyboardType: isTime ? TextInputType.number : TextInputType.multiline, // ➌ 시간 관련 텍스트 필드는 기본 숫자 키보드 아니면 일반 글자 키보드 보여주기
+            cursorColor: Colors.grey, // Sets cursor color to grey
+            maxLines: isTime ? 1 : null, // Single line for time field, multi-line otherwise
+            expands: !isTime, // Expands field fully if not a time field
+            keyboardType: isTime ? TextInputType.number : TextInputType.multiline, // Numeric keyboard for time fields
             inputFormatters: isTime
                 ? [
-              FilteringTextInputFormatter.digitsOnly,
+              FilteringTextInputFormatter.digitsOnly, // Restricts input to digits for time fields
             ]
-                : [], // ➍ 시간 관련 텍스트 필드는 숫자만 입력하도록 제한
+                : [], // No input restrictions for non-time fields
             decoration: InputDecoration(
-              border: InputBorder.none,          // 테두리 삭제
-              filled: true, // 배경색을 지정하겠다는 선언
-              fillColor: Colors.grey[300],      // 배경색
-              suffixText: isTime ? '시' : null, // ➎ 시간 관련 텍스트 필드는 ‘시' 접미사 추가
+              border: InputBorder.none, // Removes field border
+              filled: true, // Enables background color
+              fillColor: Colors.grey[300], // Sets light grey background color
+              suffixText: isTime ? 'h' : null, // Adds 'h' suffix for time fields
             ),
           ),
         ),

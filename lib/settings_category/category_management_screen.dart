@@ -48,8 +48,8 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
     });
   }
 
+  // Pass the current subject data to the edit screen
   void _editSubjectCategory(int index) async {
-    // 현재 과목 데이터를 가져와 수정 화면으로 전달
     final updatedSubject = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -60,17 +60,17 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
             ),
       ),
     );
-    // 수정된 데이터로 리스트 업데이트 및 JSON 파일 저장
+    // Update the list with the modified data and save it to the JSON file
     if (updatedSubject != null && updatedSubject is SubjectData) {
       setState(() {
-        subjectCategories[index] = updatedSubject; // 리스트 업데이트
+        subjectCategories[index] = updatedSubject; // list update
       });
-      await _saveToLocalFile(); // JSON 파일 저장
+      await _saveToLocalFile(); // JSON file save
     }
   }
 
   void _deleteSubjectCategory(int index) async {
-    // 삭제 확인 다이얼로그 표시
+    // Display a confirmation dialog for deletion
     final confirm = await showDialog(
       context: context,
       builder: (context) =>
@@ -79,28 +79,28 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
             content: Text('Are you sure you want to delete this subject?'),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context, false), // 취소
+                onPressed: () => Navigator.pop(context, false),
                 child: Text('Cancel'),
               ),
               TextButton(
-                onPressed: () => Navigator.pop(context, true), // 확인
+                onPressed: () => Navigator.pop(context, true),
                 child: Text('Delete'),
               ),
             ],
           ),
     );
-    // 확인을 눌렀을 경우 삭제
+    // Delete the item if confirmed
     if (confirm == true) {
       setState(() {
-        subjectCategories.removeAt(index); // 리스트에서 제거
+        subjectCategories.removeAt(index); // remove from list
       });
-      await _saveToLocalFile(); // JSON 파일 저장
+      await _saveToLocalFile(); // JSON file save
     }
   }
 
-  // 로컬 파일에 저장
+  // Save to the local file
   Future<void> _saveToLocalFile() async {
-    await DataManager.saveSubjects(subjectCategories); // DataManager 활용
+    await DataManager.saveSubjects(subjectCategories); // use DataManager
   }
 
 
@@ -109,11 +109,11 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Category Management'),
-        centerTitle: true, // 제목 가운데 정렬
+        centerTitle: true,
         backgroundColor: PRIMARY_COLOR,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0), // 전체 화면 여백 추가
+        padding: const EdgeInsets.all(8.0),
         child: ListView.builder(
           itemCount: subjectCategories.length,
           itemBuilder: (context, index) {
@@ -121,9 +121,9 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
             return Card(
               margin: const EdgeInsets.symmetric(
                   vertical: 8.0, horizontal: 8.0),
-              elevation: 5, // 카드 그림자 효과
+              elevation: 5,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12), // 둥근 모서리
+                borderRadius: BorderRadius.circular(12),
               ),
               child: ListTile(
                 leading: CircleAvatar(

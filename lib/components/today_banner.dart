@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:term_project/cons/colors.dart';
 
 class TodayBanner extends StatelessWidget {
-  final DateTime selectedDate;
-  final int count;
+  final DateTime selectedDate; // The selected date to display
+  final int count; // Number of schedules for the selected date
 
   const TodayBanner({
     required this.selectedDate,
@@ -14,25 +14,25 @@ class TodayBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      color: LIGHT_PRIMARY_COLOR, // PRIMARY_COLOR보다 연한 색상을 배경으로 사용
+      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0), // Adds padding around the banner
+      color: LIGHT_PRIMARY_COLOR, // Background color lighter than PRIMARY_COLOR
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Aligns text at both ends
         children: [
           Text(
-            '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}',
+            '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}', // Displays the selected date
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-              color: DARK_GREY_COLOR, // 텍스트 색상 어두운 회색
+              fontWeight: FontWeight.bold, // Bold font for emphasis
+              fontSize: 16.0, // Font size
+              color: DARK_GREY_COLOR, // Dark grey text color
             ),
           ),
           Text(
-            '$count개의 일정',
+            '$count assignments', // Displays the number of schedules
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-              color: DARK_GREY_COLOR, // 텍스트 색상 어두운 회색
+              fontWeight: FontWeight.bold, // Bold font for emphasis
+              fontSize: 16.0, // Font size
+              color: DARK_GREY_COLOR, // Dark grey text color
             ),
           ),
         ],

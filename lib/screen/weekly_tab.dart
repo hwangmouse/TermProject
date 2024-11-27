@@ -10,27 +10,29 @@ class WeeklyTab extends StatefulWidget {
 }
 
 class _WeeklyTabState extends State<WeeklyTab> {
-  TaskQueue taskQueue = TaskQueue(); // TaskQueue 객체 생성
-  List<AssignmentData> assignments = []; // 전체 과제 리스트
+  TaskQueue taskQueue = TaskQueue(); // TaskQueue object for managing tasks
+  List<AssignmentData> assignments = []; // List of all assignments
 
   @override
   void initState() {
     super.initState();
-    _loadAssignments(); // 초기화 시 과제 데이터 로드
+    _loadAssignments(); // Load assignments on initialization
   }
 
-  // JSON 파일에서 모든 과제 데이터를 로드하고 TaskQueue에 추가
+  // Load all assignments from JSON and add to TaskQueue
   Future<void> _loadAssignments() async {
     final loadedAssignments = await DataManager.loadAssignments();
 
-    // TaskQueue에 모든 과제 추가
     for (var assignment in loadedAssignments) {
-      print("Loaded Assignment: ${assignment.assignmentName}, Priority: ${assignment.priority}, Importance: ${assignment.importance}"); //debugging
-      taskQueue.addTask(assignment);
-      print("Added to TaskQueue: ${assignment.assignmentName}, Priority: ${assignment.priority}, Importance: ${assignment.importance}"); //debugging
+      // Debugging output for loaded assignments
+      print(
+          "Loaded Assignment: ${assignment.assignmentName}, Priority: ${assignment.priority}, Importance: ${assignment.importance}");
+      taskQueue.addTask(assignment); // Add to TaskQueue
+      print(
+          "Added to TaskQueue: ${assignment.assignmentName}, Priority: ${assignment.priority}, Importance: ${assignment.importance}");
     }
 
-    // TaskQueue에서 정렬된 과제 가져오기
+    // Update state with sorted assignments
     setState(() {
       assignments = taskQueue.queue;
     });
@@ -40,7 +42,7 @@ class _WeeklyTabState extends State<WeeklyTab> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('All Assignments', style: TextStyle(color: Colors.white)),
+        title: Text('Assignment List', style: TextStyle(color: Colors.white)),
         backgroundColor: PRIMARY_COLOR,
       ),
       body: SafeArea(
@@ -49,7 +51,7 @@ class _WeeklyTabState extends State<WeeklyTab> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                '전체 과제 목록',
+                'All Assignments List',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18.0,
@@ -61,7 +63,7 @@ class _WeeklyTabState extends State<WeeklyTab> {
               child: assignments.isEmpty
                   ? Center(
                 child: Text(
-                  '등록된 과제가 없습니다.',
+                  'No Assignments',
                   style: TextStyle(
                     fontSize: 16.0,
                     color: DARK_GREY_COLOR,
@@ -105,20 +107,6 @@ class _WeeklyTabState extends State<WeeklyTab> {
                                   : TextDecoration.none,
                             ),
                           ),
-                          /*
-                          Text(
-                            'Priority: ${assignment.priority.toStringAsFixed(2)}',
-                            style: TextStyle(
-                              color: assignment.isCompleted
-                                  ? Colors.grey
-                                  : Colors.blueGrey,
-                              fontSize: 14.0,
-                              decoration: assignment.isCompleted
-                                  ? TextDecoration.lineThrough
-                                  : TextDecoration.none,
-                            ),
-                          ),
-                           */
                           Text(
                             'Deadline: ${_formatDate(assignment.deadline)}',
                             style: TextStyle(
@@ -139,7 +127,7 @@ class _WeeklyTabState extends State<WeeklyTab> {
                           setState(() {
                             assignment.isCompleted = value!;
                           });
-                          DataManager.saveAssignments(assignments); // 로컬 저장
+                          DataManager.saveAssignments(assignments); // Save changes locally
                         },
                       ),
                     ),
@@ -153,6 +141,7 @@ class _WeeklyTabState extends State<WeeklyTab> {
     );
   }
 
+  // Format a DateTime as YYYY-MM-DD
   String _formatDate(DateTime date) {
     return '${date.year}-${date.month}-${date.day}';
   }

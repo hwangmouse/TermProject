@@ -1,15 +1,15 @@
 import 'dart:convert';
 
 class SubjectData {
-  String subjectName;
-  double midtermRatio;
-  double finalRatio;
-  double assignmentRatio;
-  double attendanceRatio;
-  int creditHours;
-  bool isMajor;
-  int preferenceLevel;
-  double importance;
+  String subjectName; // Name of the subject
+  double midtermRatio; // Midterm ratio in the subject's grading
+  double finalRatio; // Final exam ratio in the subject's grading
+  double assignmentRatio; // Assignment ratio in the subject's grading
+  double attendanceRatio; // Attendance ratio in the subject's grading
+  int creditHours; // Credit hours for the subject
+  bool isMajor; // Whether the subject is a major or not
+  int preferenceLevel; // User's preference level for the subject
+  double importance; // Calculated importance score for the subject
 
   SubjectData({
     required this.subjectName,
@@ -20,12 +20,15 @@ class SubjectData {
     required this.creditHours,
     required this.isMajor,
     required this.preferenceLevel,
-    this.importance = 0.0,
+    this.importance = 0.0, // Default importance is 0
   });
 
+  // Calculates the importance of the subject
   void calculateImportance(int maxCreditHours) {
-    double creditScore = creditHours / maxCreditHours;
+    double creditScore = creditHours / maxCreditHours; // Credit hours importance
     double preferenceScore = 1.0;
+
+    // Adjust preference score based on preference level
     switch (preferenceLevel) {
       case 1:
         preferenceScore = 0.8;
@@ -45,14 +48,15 @@ class SubjectData {
       default:
         print("Error value");
     }
-    double majorScore = isMajor ? 1.0 : 0.8;
-    double assignmentScore = assignmentRatio * 4.0;
+
+    double majorScore = isMajor ? 1.0 : 0.8; // Higher score for major subjects
+    double assignmentScore = assignmentRatio * 4.0; // Amplify assignment ratio
+
+    // Calculate overall importance
     importance = (creditScore * majorScore) + preferenceScore + assignmentScore;
   }
 
-
-
-  // Dart 객체 -> JSON
+  // Converts the object to JSON
   Map<String, dynamic> toJson() {
     return {
       'subjectName': subjectName,
@@ -67,7 +71,7 @@ class SubjectData {
     };
   }
 
-  // JSON -> Dart 객체
+  // Creates an object from JSON
   factory SubjectData.fromJson(Map<String, dynamic> json) {
     return SubjectData(
       subjectName: json['subjectName'],

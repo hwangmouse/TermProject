@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:term_project/components/bottom_navigation.dart';
-import 'package:term_project/cons/schedule_provider.dart'; // ScheduleProvider 파일 가져오기
+import 'package:term_project/cons/schedule_provider.dart'; // ScheduleProvider for schedule management
 import 'package:term_project/cons/colors.dart';
-import 'package:term_project/alarm/background_alarm.dart'; // 알림 초기화 및 백그라운드 작업
+import 'package:term_project/alarm/background_alarm.dart'; // For initializing alarms and background tasks
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Flutter 시스템 초기화
-  print("Initializing alarms..."); // 로그 추가
-  await initializeAlarms(); // 로컬 알림 초기화
-  print("Alarms initialized."); // 로그 추가
+  WidgetsFlutterBinding.ensureInitialized(); // Initialize Flutter system bindings
+  print("Initializing alarms..."); // Debug log
+  await initializeAlarms(); // Initialize local notifications
+  print("Alarms initialized."); // Debug log
 
-  print("Registering background alarms..."); // 로그 추가
-  registerBackgroundAlarms(); // 백그라운드 작업 등록
-  print("Background alarms registered."); // 로그 추가
+  print("Registering background alarms..."); // Debug log
+  registerBackgroundAlarms(); // Register background alarm tasks
+  print("Background alarms registered."); // Debug log
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => ScheduleProvider()),
-        ChangeNotifierProvider(create: (context) => ThemeProvider()), // 테마 상태 관리 추가
+        ChangeNotifierProvider(create: (context) => ScheduleProvider()), // Schedule state management
+        ChangeNotifierProvider(create: (context) => ThemeProvider()), // Theme state management
       ],
       child: MyApp(),
     ),
@@ -29,12 +29,12 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context); // Access theme provider
 
     return MaterialApp(
       title: 'Navigation Example',
       theme: ThemeData(
-        brightness: Brightness.light,
+        brightness: Brightness.light, // Light theme settings
         primaryColor: PRIMARY_COLOR,
         scaffoldBackgroundColor: LIGHT_GREY_COLOR,
         appBarTheme: AppBarTheme(
@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       darkTheme: ThemeData(
-        brightness: Brightness.dark,
+        brightness: Brightness.dark, // Dark theme settings
         primaryColor: Colors.black,
         scaffoldBackgroundColor: Colors.black,
         appBarTheme: AppBarTheme(
@@ -65,19 +65,19 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(color: Colors.white70),
         ),
       ),
-      themeMode: themeProvider.themeMode, // Provider를 사용하여 테마 동적으로 전환
-      home: BottomNavigationScreen(),
+      themeMode: themeProvider.themeMode, // Dynamically switch theme based on provider
+      home: BottomNavigationScreen(), // Main screen with bottom navigation
     );
   }
 }
 
 class ThemeProvider with ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.light;
+  ThemeMode _themeMode = ThemeMode.light; // Default to light theme
 
-  ThemeMode get themeMode => _themeMode;
+  ThemeMode get themeMode => _themeMode; // Current theme mode
 
   void toggleTheme(bool isDarkMode) {
-    _themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light;
-    notifyListeners(); // 상태 변경 알림
+    _themeMode = isDarkMode ? ThemeMode.dark : ThemeMode.light; // Toggle theme mode
+    notifyListeners(); // Notify listeners of the state change
   }
 }

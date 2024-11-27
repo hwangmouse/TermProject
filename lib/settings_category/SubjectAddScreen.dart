@@ -3,8 +3,8 @@ import 'package:term_project/inapp_algorithm/SubjectData.dart';
 import 'package:term_project/DataManager.dart';
 
 class SubjectAddScreen extends StatefulWidget {
-  final List<SubjectData> subjectList; // 기존 과목 리스트
-  final SubjectData? existingSubject; // 수정 모드 여부 확인
+  final List<SubjectData> subjectList; // List of existing subjects
+  final SubjectData? existingSubject; // Check if editing an existing subject
 
   SubjectAddScreen({required this.subjectList, this.existingSubject});
 
@@ -14,9 +14,9 @@ class SubjectAddScreen extends StatefulWidget {
 
 class _SubjectAddScreenState extends State<SubjectAddScreen> {
   final TextEditingController _nameController = TextEditingController();
-  bool isMajor = false;
-  int credit = 1;
-  int preference = 1;
+  bool isMajor = false; // Major status
+  int credit = 1; // Credit hours
+  int preference = 1; // Preference level (1-5)
   double attendanceRatio = 0.0;
   double midExamRatio = 0.0;
   double finalExamRatio = 0.0;
@@ -39,10 +39,12 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
   }
 
   void _saveSubject() async {
+    // Ensure the total ratio equals 1.0
     if ((attendanceRatio + midExamRatio + finalExamRatio + assignmentRatio)
-        .toStringAsFixed(2) != "1.00") {
+        .toStringAsFixed(2) !=
+        "1.00") {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('성적 비율의 합은 1.0이어야 합니다.')),
+        SnackBar(content: Text('The total weight ratios must sum to 1.0.')),
       );
       return;
     }
@@ -58,11 +60,13 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
       assignmentRatio: assignmentRatio,
     );
 
-    // 기존 리스트에 추가
+    // Add the new or updated subject to the list
     widget.subjectList.add(newSubject);
-    // JSON 파일로 저장
+
+    // Save the list to JSON
     await DataManager.saveSubjects(widget.subjectList);
-    // 화면 닫기
+
+    // Close the screen and pass back the new subject
     Navigator.pop(context, newSubject);
   }
 
@@ -70,21 +74,21 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.existingSubject == null ? '과목 추가' : '과목 수정'),
+        title: Text(widget.existingSubject == null ? 'Add Subject' : 'Edit Subject'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 과목 이름 입력
+            // Subject name input
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: '과목 이름'),
+              decoration: InputDecoration(labelText: 'Subject Name'),
             ),
-            // 전공 여부
+            // Major status toggle
             SwitchListTile(
-              title: Text('전공 여부'),
+              title: Text('Is Major'),
               value: isMajor,
               onChanged: (value) {
                 setState(() {
@@ -92,15 +96,15 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
                 });
               },
             ),
-            // 학점 선택
+            // Credit hours dropdown
             DropdownButtonFormField<int>(
-              decoration: InputDecoration(labelText: '학점'),
+              decoration: InputDecoration(labelText: 'Credits'),
               value: credit,
               items: List.generate(
                 3,
                     (index) => DropdownMenuItem(
                   value: index + 1,
-                  child: Text('${index + 1} 학점'),
+                  child: Text('${index + 1} Credit(s)'),
                 ),
               ),
               onChanged: (value) {
@@ -109,10 +113,10 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
                 });
               },
             ),
-            // 선호도 선택 (별점)
+            // Preference level (star rating)
             Row(
               children: [
-                Text('선호도'),
+                Text('Preference'),
                 Spacer(),
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -134,14 +138,14 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
               ],
             ),
             SizedBox(height: 20),
-            // 성적 비율 입력
+            // Grade ratios
             Text(
-              '성적 비율 입력 (합이 1.00이어야 함)',
+              'Enter Grade Ratios (Total must equal 1.0)',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
             _buildRatioInput(
-              label: '출석 비율',
+              label: 'Attendance Ratio',
               onChanged: (value) {
                 setState(() {
                   attendanceRatio = double.tryParse(value) ?? 0.0;
@@ -149,7 +153,7 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
               },
             ),
             _buildRatioInput(
-              label: '중간고사 비율',
+              label: 'Midterm Ratio',
               onChanged: (value) {
                 setState(() {
                   midExamRatio = double.tryParse(value) ?? 0.0;
@@ -157,7 +161,7 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
               },
             ),
             _buildRatioInput(
-              label: '기말고사 비율',
+              label: 'Final Exam Ratio',
               onChanged: (value) {
                 setState(() {
                   finalExamRatio = double.tryParse(value) ?? 0.0;
@@ -165,7 +169,7 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
               },
             ),
             _buildRatioInput(
-              label: '과제 비율',
+              label: 'Assignment Ratio',
               onChanged: (value) {
                 setState(() {
                   assignmentRatio = double.tryParse(value) ?? 0.0;
@@ -173,10 +177,11 @@ class _SubjectAddScreenState extends State<SubjectAddScreen> {
               },
             ),
             SizedBox(height: 20),
+            // Save button
             Center(
               child: ElevatedButton(
                 onPressed: _saveSubject,
-                child: Text(widget.existingSubject == null ? '과목 추가' : '저장'),
+                child: Text(widget.existingSubject == null ? 'Add Subject' : 'Save'),
               ),
             ),
           ],

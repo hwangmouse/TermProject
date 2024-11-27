@@ -14,31 +14,30 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   DateTime selectedDate = DateTime.utc(
     DateTime.now().year,
     DateTime.now().month,
     DateTime.now().day,
-  );
-  List<AssignmentData> assignments = []; // 로컬 파일에서 불러올 과제 데이터
-  List<String> subjectNames = []; // 과목 이름 리스트
+  ); // Initialize selected date to today
+  List<AssignmentData> assignments = []; // List of assignments loaded from local storage
+  List<String> subjectNames = []; // List of subject names
 
   @override
   void initState() {
     super.initState();
-    _loadAssignments(); // 초기화 시 로컬 데이터 로드
-    _loadSubjects(); // 과목 데이터를 로드
+    _loadAssignments(); // Load assignments on initialization
+    _loadSubjects(); // Load subjects on initialization
   }
 
-
-  // JSON 파일에서 과제 데이터를 불러오는 메서드
+  // Load assignments from JSON file
   Future<void> _loadAssignments() async {
-    final loadedAssignments = await DataManager.loadAssignments(); // DataManager 호출
+    final loadedAssignments = await DataManager.loadAssignments();
     setState(() {
-      assignments = loadedAssignments; // 불러온 데이터를 상태에 저장
+      assignments = loadedAssignments;
     });
   }
 
+  // Load subject names
   Future<void> _loadSubjects() async {
     final subjects = await DataManager.loadSubjects();
     setState(() {
@@ -46,37 +45,34 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // 새로운 과제 추가 후 저장
+  // Add a new assignment and save it
   Future<void> _addAssignment(AssignmentData newAssignment) async {
     setState(() {
-      assignments.add(newAssignment); // 새 과제 추가
+      assignments.add(newAssignment);
     });
-    await DataManager.saveAssignments(assignments); // 로컬 파일에 저장
+    await DataManager.saveAssignments(assignments);
   }
 
-  // 과제 삭제
+  // Delete an assignment and save changes
   Future<void> _deleteAssignment(int index) async {
     setState(() {
-      assignments.removeAt(index); // 특정 과제 삭제
+      assignments.removeAt(index);
     });
-    await DataManager.saveAssignments(assignments); // 로컬 파일 업데이트
+    await DataManager.saveAssignments(assignments);
   }
 
   @override
   Widget build(BuildContext context) {
-    // 선택된 날짜에 해당하는 과제 필터링
+    // Filter assignments based on the selected date
     final filteredAssignments = assignments.where((assignment) {
-      final deadline = assignment.deadline; // 일정 마감일
-      // 선택된 날짜가 마감일과 같거나 이전인지 확인
+      final deadline = assignment.deadline;
       return selectedDate.isBefore(deadline.add(Duration(days: 1)));
     }).toList();
 
-    // 과목별로 과제 그룹화
+    // Group assignments by subject
     final Map<String, List<AssignmentData>> groupedAssignments = {};
     for (var assignment in filteredAssignments) {
-      if (!groupedAssignments.containsKey(assignment.subjectName)) {
-        groupedAssignments[assignment.subjectName] = [];
-      }
+      groupedAssignments.putIfAbsent(assignment.subjectName, () => []);
       groupedAssignments[assignment.subjectName]!.add(assignment);
     }
 
@@ -90,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // 과제 추가를 위한 Bottom Sheet 호출
+          // Show bottom sheet to add a new assignment
           final result = await showModalBottomSheet<AssignmentData>(
             context: context,
             isDismissible: true,
@@ -98,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
             isScrollControlled: true,
           );
           if (result != null) {
-            await _addAssignment(result); // 과제 저장
+            await _addAssignment(result);
           }
         },
         backgroundColor: PRIMARY_COLOR,
@@ -107,24 +103,24 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // 상단 달력
+            // Calendar at the top
             MainCalendar(
               selectedDate: selectedDate,
-              onDaySelected: _onDaySelected, // 날짜 선택 시 호출
+              onDaySelected: _onDaySelected,
             ),
             SizedBox(height: 8.0),
-            // 오늘 과제 배너
+            // Banner showing the number of assignments
             TodayBanner(
               selectedDate: selectedDate,
               count: filteredAssignments.length,
             ),
             SizedBox(height: 8.0),
-            // 과목별로 정렬된 과제 리스트
+            // Assignment list grouped by subject
             Expanded(
               child: groupedAssignments.isEmpty
                   ? Center(
                 child: Text(
-                  '오늘은 과제가 없습니다.',
+                  'No assignments for today.',
                   style: TextStyle(color: Colors.grey, fontSize: 16.0),
                 ),
               )
@@ -136,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 과목 이름 헤더
+                      // Subject header
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
@@ -148,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      // 과제 리스트
+                      // Assignment cards
                       ...subjectAssignments.map((assignment) {
                         return Card(
                           margin: EdgeInsets.symmetric(
@@ -161,11 +157,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 decoration: assignment.isCompleted
                                     ? TextDecoration.lineThrough
                                     : TextDecoration.none,
-                                color: assignment.isCompleted ? Colors.grey : Colors.black,
+                                color: assignment.isCompleted
+                                    ? Colors.grey
+                                    : Colors.black,
                               ),
                             ),
                             subtitle: Text(
-                              '마감일: ${_formatDate(assignment.deadline)}',
+                              'Deadline: ${_formatDate(assignment.deadline)}',
                               style: TextStyle(
                                 decoration: assignment.isCompleted
                                     ? TextDecoration.lineThrough
@@ -175,21 +173,22 @@ class _HomeScreenState extends State<HomeScreen> {
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // 완료 체크박스
+                                // Checkbox for marking completion
                                 Checkbox(
                                   value: assignment.isCompleted,
                                   onChanged: (value) {
                                     setState(() {
                                       assignment.isCompleted = value!;
                                     });
-                                    DataManager.saveAssignments(assignments); // 변경 사항 저장
+                                    DataManager.saveAssignments(assignments);
                                   },
                                 ),
-                                // 삭제 버튼
+                                // Delete button
                                 IconButton(
-                                  icon: Icon(Icons.delete, color: Colors.red),
-                                  onPressed: () =>
-                                      _deleteAssignment(assignments.indexOf(assignment)),
+                                  icon: Icon(Icons.delete,
+                                      color: Colors.red),
+                                  onPressed: () => _deleteAssignment(
+                                      assignments.indexOf(assignment)),
                                 ),
                               ],
                             ),
@@ -207,14 +206,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // 날짜 선택 시 호출
+  // Updates the selected date
   void _onDaySelected(DateTime selectedDate, DateTime focusedDate) {
     setState(() {
       this.selectedDate = selectedDate;
     });
   }
 
-  // 날짜를 YYYY-MM-DD 형식으로 변환
+  // Formats a date as YYYY-MM-DD
   String _formatDate(DateTime date) {
     return '${date.year}-${date.month}-${date.day}';
   }

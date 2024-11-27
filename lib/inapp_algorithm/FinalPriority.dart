@@ -3,21 +3,21 @@ import 'SubjectData.dart';
 import 'AssignmentData.dart';
 
 class FinalPriority {
-  List<SubjectData> subjects;
-  List<AssignmentData> assignments;
-  List<DateTime> schedules;
+  List<SubjectData> subjects; // List of subject data
+  List<AssignmentData> assignments; // List of assignment data
+  List<DateTime> schedules; // List of scheduled dates
 
   FinalPriority(this.subjects, this.assignments, this.schedules);
 
   void calcPriority() {
-    final DateTime now = DateTime.now();
+    final DateTime now = DateTime.now(); // Current date and time
 
     Map<String, double> subjectImportanceMap = {};
     for (var subject in subjects) {
-      subjectImportanceMap[subject.subjectName] = subject.importance;
+      subjectImportanceMap[subject.subjectName] = subject.importance; // Map subject importance
     }
 
-    // 우선 기존 우선순위 산출
+    // Calculate initial priority for assignments
     for (var assignment in assignments) {
       double assignmentImportance = assignment.importance;
       DateTime assignmentRecDeadline = assignment.recDeadline;
@@ -25,13 +25,16 @@ class FinalPriority {
 
       if (assignment.deadline != null) {
         double recDeadlineImportance = calcDeadlineImportance(
-            assignmentRecDeadline, assignment.deadline!, now);
+          assignmentRecDeadline,
+          assignment.deadline!,
+          now,
+        );
 
         double finalPriority =
             subjectImportance + assignmentImportance + recDeadlineImportance;
         assignment.priority = finalPriority;
 
-        // 디버깅 출력
+        // Debugging output
         print("assignmentImportance: $assignmentImportance");
         print("subjectImportance: $subjectImportance");
         print("recDeadlineImportance: $recDeadlineImportance");
@@ -39,14 +42,14 @@ class FinalPriority {
       }
     }
 
-    // 0-1 Knapsack 문제 적용: 데드라인과 예상 소요 시간을 고려해 선택 조정
+    // Apply 0-1 Knapsack algorithm to optimize assignment selection
     int deadlineLimit = _calculateDaysUntilClosestDeadline(now);
     List<List<double>> dp = List.generate(assignments.length + 1,
-        (_) => List.filled(deadlineLimit + 1, 0.0)); // double 타입으로 dp 테이블 생성
+            (_) => List.filled(deadlineLimit + 1, 0.0)); // DP table for priorities
 
     for (int i = 1; i <= assignments.length; i++) {
       for (int w = 0; w <= deadlineLimit; w++) {
-        int expectedPeriod = assignments[i - 1].expectedPeriod.toInt(); // double을 int로 변환
+        int expectedPeriod = assignments[i - 1].expectedPeriod.toInt();
         double priority = assignments[i - 1].priority;
 
         if (expectedPeriod <= w) {
@@ -57,16 +60,17 @@ class FinalPriority {
       }
     }
 
-    // 선택된 과제를 기반으로 우선순위 조정
+    // Adjust priorities based on selected assignments
     int remainingCapacity = deadlineLimit;
     for (int i = assignments.length; i > 0 && remainingCapacity > 0; i--) {
       if (dp[i][remainingCapacity] != dp[i - 1][remainingCapacity]) {
-        assignments[i - 1].priority += 10; // 우선순위 재조정
-        remainingCapacity -= assignments[i - 1].expectedPeriod.toInt(); // double을 int로 변환
+        assignments[i - 1].priority += 10; // Boost priority
+        remainingCapacity -= assignments[i - 1].expectedPeriod.toInt();
       }
     }
   }
 
+  // Calculate importance based on deadline proximity
   double calcDeadlineImportance(
       DateTime recDeadline, DateTime deadline, DateTime currentDate) {
     double baseImportance = 2.5;
@@ -85,6 +89,7 @@ class FinalPriority {
     return baseImportance < 2.5 ? 2.5 : baseImportance;
   }
 
+  // Calculate the number of days until the closest deadline
   int _calculateDaysUntilClosestDeadline(DateTime now) {
     return assignments
         .where((a) => a.deadline != null)

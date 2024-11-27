@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:term_project/cons/colors.dart';
 
 class ScheduleCard extends StatelessWidget {
-  final DateTime? endDate; // 종료 날짜
-  final String content;
-  final bool isCompleted; // 완료 여부
-  final VoidCallback? onToggleComplete; // 완료 상태 변경 콜백
-  final VoidCallback? onEdit; // 수정 콜백
+  final DateTime? endDate; // End date of the schedule
+  final String content; // Content of the schedule
+  final bool isCompleted; // Completion status
+  final VoidCallback? onToggleComplete; // Callback to toggle completion
+  final VoidCallback? onEdit; // Callback to edit the schedule
 
   const ScheduleCard({
     this.endDate,
@@ -19,60 +19,60 @@ class ScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final contentColor = isCompleted ? Colors.grey : Colors.black; // 내용 색상 변경
-    final dateColor = isCompleted ? Colors.grey : PRIMARY_COLOR; // 종료 날짜 색상 변경
+    final contentColor = isCompleted ? Colors.grey : Colors.black; // Text color based on completion
+    final dateColor = isCompleted ? Colors.grey : PRIMARY_COLOR; // Date color based on completion
 
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
           width: 1.0,
-          color: PRIMARY_COLOR,
+          color: PRIMARY_COLOR, // Border color
         ),
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(8.0), // Rounded corners
       ),
-      padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0), // 패딩 조정
-      margin: EdgeInsets.only(bottom: 8.0), // 아래 간격 조정
+      padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0), // Padding inside the card
+      margin: EdgeInsets.only(bottom: 8.0), // Margin below the card
       child: Row(
         children: [
-          // 작은 체크박스
+          // Checkbox for completion
           GestureDetector(
-            onTap: onToggleComplete,
+            onTap: onToggleComplete, // Toggles completion state
             child: Container(
-              width: 16.0, // 체크박스 크기 축소
-              height: 16.0, // 체크박스 크기 축소
+              width: 16.0,
+              height: 16.0,
               decoration: BoxDecoration(
                 shape: BoxShape.rectangle,
                 border: Border.all(
-                  color: isCompleted ? PRIMARY_COLOR : Colors.grey,
+                  color: isCompleted ? PRIMARY_COLOR : Colors.grey, // Border color changes on completion
                   width: 2.0,
                 ),
-                color: isCompleted ? PRIMARY_COLOR : Colors.transparent,
+                color: isCompleted ? PRIMARY_COLOR : Colors.transparent, // Fill color changes on completion
               ),
               child: isCompleted
-                  ? Icon(Icons.check, size: 12.0, color: Colors.white) // 아이콘 크기 축소
+                  ? Icon(Icons.check, size: 12.0, color: Colors.white) // Check icon for completed state
                   : null,
             ),
           ),
-          SizedBox(width: 12.0), // 체크박스와 텍스트 간격
+          SizedBox(width: 12.0), // Spacing between checkbox and text
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (endDate != null)
                   Text(
-                    '종료 날짜: ${endDate!.year}-${endDate!.month}-${endDate!.day}',
+                    'End Date: ${endDate!.year}-${endDate!.month}-${endDate!.day}', // Display end date
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: dateColor, // 완료 상태에 따라 색상 변경
+                      color: dateColor,
                       fontSize: 14.0,
                     ),
                   ),
-                SizedBox(height: 4.0),
+                SizedBox(height: 4.0), // Spacing between date and content
                 Text(
-                  content,
+                  content, // Schedule content
                   style: TextStyle(
                     fontSize: 12.0,
-                    color: contentColor, // 완료 상태에 따른 내용 색상 변경
+                    color: contentColor,
                   ),
                 ),
               ],
@@ -80,9 +80,9 @@ class ScheduleCard extends StatelessWidget {
           ),
           if (onEdit != null)
             TextButton(
-              onPressed: onEdit,
+              onPressed: onEdit, // Edit button action
               child: Text(
-                '수정',
+                'Edit', // Edit button label
                 style: TextStyle(
                   color: PRIMARY_COLOR,
                   fontWeight: FontWeight.bold,

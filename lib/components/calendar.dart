@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:term_project/cons/colors.dart';
-import 'package:term_project/cons/schedule_provider.dart';
+import 'package:term_project/cons/colors.dart'; // Import for color constants
+import 'package:term_project/cons/schedule_provider.dart'; // Import for schedule provider
 
 class MainCalendar extends StatelessWidget {
-  final DateTime selectedDate;
-  final Function(DateTime, DateTime) onDaySelected;
+  final DateTime selectedDate; // Selected date to highlight
+  final Function(DateTime, DateTime) onDaySelected; // Callback for day selection
 
   MainCalendar({required this.selectedDate, required this.onDaySelected});
 
@@ -17,59 +17,59 @@ class MainCalendar extends StatelessWidget {
     // Generate markers for days with schedules
     final markers = <DateTime, List>{};
     for (var schedule in scheduleProvider.schedules) {
-      final date = schedule['selectedDate'] as DateTime;
-      markers[date] = (markers[date] ?? [])..add(schedule);
+      final date = schedule['selectedDate'] as DateTime; // Retrieve date from schedule
+      markers[date] = (markers[date] ?? [])..add(schedule); // Add schedule to the marker list
     }
 
-    DateTime today = DateTime.now();
+    DateTime today = DateTime.now(); // Current date
 
     return TableCalendar(
-      focusedDay: selectedDate,
-      firstDay: DateTime(2000),
-      lastDay: DateTime(2100),
+      focusedDay: selectedDate, // Initial focused day
+      firstDay: DateTime(2000), // Earliest selectable date
+      lastDay: DateTime(2100), // Latest selectable date
       selectedDayPredicate: (day) =>
-      isSameDay(selectedDate, day) && !isSameDay(day, today),
-      onDaySelected: onDaySelected,
+      isSameDay(selectedDate, day) && !isSameDay(day, today), // Highlight selected day if not today
+      onDaySelected: onDaySelected, // Handle day selection
       calendarStyle: CalendarStyle(
-        // 스타일: 오늘 날짜
+        // Style for today's date
         todayDecoration: BoxDecoration(
-          color: PRIMARY_COLOR, // 항상 진한 민트색
-          shape: BoxShape.circle,
+          color: PRIMARY_COLOR, // Solid mint color for today
+          shape: BoxShape.circle, // Circular shape
         ),
         todayTextStyle: TextStyle(
-          color: Colors.white, // 흰색 텍스트
-          fontWeight: FontWeight.bold,
+          color: Colors.white, // White text for today
+          fontWeight: FontWeight.bold, // Bold font for emphasis
         ),
 
-        // 스타일: 선택된 날짜 (오늘이 아닌 경우만)
+        // Style for selected date (when not today)
         selectedDecoration: BoxDecoration(
-          color: LIGHT_PRIMARY_COLOR, // 연한 민트색
-          shape: BoxShape.circle,
+          color: LIGHT_PRIMARY_COLOR, // Light mint color for selection
+          shape: BoxShape.circle, // Circular shape
         ),
         selectedTextStyle: TextStyle(
-          color: DARK_GREY_COLOR, // 회색 텍스트
+          color: DARK_GREY_COLOR, // Gray text for selected date
         ),
 
-        // 스타일: 기본 날짜
+        // Style for default dates
         defaultDecoration: BoxDecoration(
-          shape: BoxShape.circle,
+          shape: BoxShape.circle, // Circular shape for default days
         ),
         weekendDecoration: BoxDecoration(
-          shape: BoxShape.circle,
+          shape: BoxShape.circle, // Circular shape for weekends
         ),
 
-        // 마커 스타일
-        markersMaxCount: 1,
+        // Marker style for events
+        markersMaxCount: 1, // Maximum markers per day
         markerDecoration: BoxDecoration(
-          color: Colors.grey, // 마커 색상: 흰색
-          shape: BoxShape.circle,
+          color: Colors.grey, // Gray color for markers
+          shape: BoxShape.circle, // Circular shape for markers
         ),
       ),
       headerStyle: HeaderStyle(
-        formatButtonVisible: false,
-        titleCentered: true,
+        formatButtonVisible: false, // Hide format button
+        titleCentered: true, // Center-align the calendar title
       ),
-      eventLoader: (day) => markers[day] ?? [],
+      eventLoader: (day) => markers[day] ?? [], // Load events for the selected day
     );
   }
 }
