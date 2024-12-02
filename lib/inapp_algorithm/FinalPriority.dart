@@ -93,7 +93,7 @@ class FinalPriority {
   int _calculateDaysUntilClosestDeadline(DateTime now) {
     return assignments
         .where((a) => a.deadline != null)
-        .map((a) => a.deadline!.difference(now).inDays)
+        .map((a) => ((a.deadline!.add(Duration(days: 1))).difference(now).inMinutes / 60).ceil())
         .reduce(min);
   }
 }
